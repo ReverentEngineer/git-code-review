@@ -9,13 +9,13 @@ Usage:
     git code-review view <name>
 
 Examples:
-    
+
     List open code reviews::
 
         git code-review list
 
     List closed code reviews::
-        
+
         git code-review list --closed
 
     Open code review::
@@ -37,12 +37,17 @@ import sys
 import re
 import os
 
+__VERSION__ = '0.1.0'
+
 try:
-    import mscvrt
+    import msvcrt
+
     def getch():
         return msvcrt.getch()
 except ImportError:
-    import tty, termios
+    import tty
+    import termios
+
     def getch():
         fd = sys.stdin.fileno()
         old_settings = termios.tcgetattr(fd)
@@ -66,17 +71,20 @@ DIFF_FILE_HEADER = re.compile(r"^diff --git a\/.* b\/(.*)$")
 HUNK_HEADER = re.compile(r"\@\@ -[\d]+,([\d]+) \+[\d]+,([\d]+) \@\@")
 REVIEW_TREE_REGEX = re.compile(r"040000 tree ([0-9a-f]{40})\t(.*)$")
 
+
 def list_code_reviews(closed=False):
     """ Lists all th open code reviews
-    
+
     Args:
-        closed (bool): Whether to look for closed code reviews. Defaults to false.
+        closed (bool): Whether to look for closed code reviews.
+                       Defaults to false.
     """
-    refs = check_output(["git","show-ref"])
+    refs = check_output(["git", "show-ref"])
     regex = OPEN_REVIEW_REGEX if not closed else CLOSED_REVIEW_REGEX
     reviews = regex.findall(refs)
     for name in reviews:
         print(name)
+
 
 def close_code_review(name):
     """ Closes a code review
@@ -87,18 +95,26 @@ def close_code_review(name):
     refhash = None
     closed_ref = "/".join([CLOSED_REVIEWS, name])
     open_ref = "/".join([OPEN_REVIEWS, name])
-    proc = Popen(["git", "show-ref", "-s", open_ref], stderr=DEVNULL, stdout=PIPE)
+    proc = Popen(["git", "show-ref", "-s", open_ref],
+                 stderr=DEVNULL,
+                 stdout=PIPE)
     refhash = proc.communicate()[0].strip()
     if proc.returncode != 0:
         print("Code review '%s' does not exist or isn't open." % (name))
         return
 
-    proc = Popen(["git", "update-ref", "--stdin"], stderr=DEVNULL, stdin=PIPE, stdout=PIPE)
-    proc.communicate(input="create %s %s\ndelete %s\n" % (closed_ref, refhash, open_ref))
+    proc = Popen(["git", "update-ref", "--stdin"],
+                 stderr=DEVNULL,
+                 stdin=PIPE,
+                 stdout=PIPE)
+    proc.communicate(input="create %s %s\ndelete %s\n" % (closed_ref,
+                                                          refhash,
+                                                          open_ref))
     if proc.returncode == 0:
         print("Code review '%s' closed." % (name))
     else:
         print('There was a problem updating references.')
+
 
 def can_run(exe):
     """ Checks if executable exists on path
@@ -108,9 +124,10 @@ def can_run(exe):
     """
     for dir in os.getenv("PATH").split(':'):
         path = os.path.join(dir, exe)
-        if (os.path.exists(os.path.join(dir, exe))):
+        if (os.path.exists(path)):
             return True
     return False
+
 
 def prompt_for_message(prompt=None, temp_filename="INPUT-MESSAGE"):
     """ Prompts for message
@@ -129,7 +146,7 @@ def prompt_for_message(prompt=None, temp_filename="INPUT-MESSAGE"):
     else:
         print('No editor seems to be available.')
         return None
-    
+
     if prompt:
         with open(temp_filename, 'w') as message_file:
             for line in prompt.split('\n'):
@@ -145,9 +162,10 @@ def prompt_for_message(prompt=None, temp_filename="INPUT-MESSAGE"):
 
     return re.sub("#(.*)", "", message).strip()
 
+
 def open_code_review(name, first, last):
     """ Opens a code review
-    
+
     Args:
         name (str): Name of the code review
         start (str): First commit in series to code review
@@ -155,18 +173,23 @@ def open_code_review(name, first, last):
     """
     open_ref = "%s/%s" % (OPEN_REVIEWS, name)
     closed_ref = "%s/%s" % (CLOSED_REVIEWS, name)
-    proc = Popen(["git", "show-ref", "-s", open_ref, closed_ref], stdin=DEVNULL, stdout=PIPE, stderr=DEVNULL)
+    proc = Popen(["git", "show-ref", "-s", open_ref, closed_ref],
+                 stdin=DEVNULL,
+                 stdout=PIPE,
+                 stderr=DEVNULL)
     proc.communicate()
     if proc.returncode == 0:
         print("Code review '%s' already exists." % (name))
         return
 
-    description = prompt_for_message("Enter a code review description", "CODE-REVIEW-DESCRIPTION")
+    description = prompt_for_message("Enter a code review description",
+                                     "CODE-REVIEW-DESCRIPTION")
     if len(description) == 0:
         print('No description provided.')
         return
 
-    proc = Popen(["git", "diff", "%s..%s" % (first, last)], stderr=DEVNULL, stdout=PIPE)
+    proc = Popen(["git", "diff", "%s..%s" % (first, last)],
+                 stderr=DEVNULL, stdout=PIPE)
     diff = proc.communicate()[0]
     filename = None
     in_hunk = False
@@ -174,7 +197,8 @@ def open_code_review(name, first, last):
     after_lines = 0
     current_before_lines = 0
     current_after_lines = 0
-    review_tree_proc = Popen(["git", "mktree"], stdin=PIPE, stderr=DEVNULL, stdout=PIPE)
+    review_tree_proc = Popen(["git", "mktree"], stdin=PIPE,
+                             stderr=DEVNULL, stdout=PIPE)
     blob_proc = None
     part = 1
     for line in diff.split("\n"):
@@ -188,12 +212,15 @@ def open_code_review(name, first, last):
                 current_before_lines += 1
                 current_after_lines += 1
             if (current_before_lines == before_lines and
-                current_after_lines == after_lines):
+                    current_after_lines == after_lines):
                 in_hunk = False
                 blobhash = blob_proc.communicate()[0].strip()
-                proc = Popen(["git", "mktree"], stdin=PIPE, stderr=DEVNULL, stdout=PIPE)
-                treehash = proc.communicate(input="100644 blob %s\thunk\n" % (blobhash))[0].strip()
-                review_tree_proc.stdin.write("040000 tree %s\t%04d\n" % (treehash, part))
+                proc = Popen(["git", "mktree"], stdin=PIPE,
+                             stderr=DEVNULL, stdout=PIPE)
+                treehash = proc.communicate(input="100644 blob %s\thunk\n"
+                                            % (blobhash))[0].strip()
+                review_tree_proc.stdin.write("040000 tree %s\t%04d\n"
+                                             % (treehash, part))
                 part += 1
             continue
 
@@ -204,22 +231,28 @@ def open_code_review(name, first, last):
 
         match = HUNK_HEADER.match(line)
         if match:
-            blob_proc = Popen(['git','hash-object','-t','blob', '-w', '--stdin'], stderr=DEVNULL, stdout=PIPE, stdin=PIPE)
+            blob_proc = Popen(['git', 'hash-object', '-t', 'blob',
+                              '-w', '--stdin'], stderr=DEVNULL,
+                              stdout=PIPE, stdin=PIPE)
             before_lines, after_lines = match.groups()
             before_lines, after_lines = int(before_lines), int(after_lines)
             in_hunk = True
             current_before_lines = 0
             current_after_lines = 0
+            blob_proc.stdin.write("Filename: %s\n\n" % (filename))
     reviewtreehash = review_tree_proc.communicate()[0].strip()
-    proc = Popen(['git', 'commit-tree', reviewtreehash], stderr=DEVNULL, stdout=PIPE, stdin=PIPE)
+    proc = Popen(['git', 'commit-tree', reviewtreehash],
+                 stderr=DEVNULL, stdout=PIPE, stdin=PIPE)
     proc.stdin.write(description)
     commithash = proc.communicate()[0].strip()
-    proc = Popen(['git', 'update-ref', open_ref, commithash], stderr=DEVNULL, stdout=DEVNULL) 
+    proc = Popen(['git', 'update-ref', open_ref, commithash],
+                 stderr=DEVNULL, stdout=DEVNULL)
     proc.communicate()
     if proc.returncode == 0:
         print("Code review '%s' created." % (name))
     else:
         print("Couldn't create code '%s'. Internal error." % (name))
+
 
 def view_code_review(name):
     """ Views a code review
@@ -228,7 +261,8 @@ def view_code_review(name):
         name (str): Code review to view
     """
     open_ref = "%s/%s" % (OPEN_REVIEWS, name)
-    proc = Popen(["git", "show-ref", "-s", open_ref], stderr=DEVNULL, stdout=PIPE)
+    proc = Popen(["git", "show-ref", "-s", open_ref], stderr=DEVNULL,
+                 stdout=PIPE)
     reviewhash = proc.communicate()[0].strip()
     if proc.returncode != 0:
         print("No open code review named '%s'" % (name))
@@ -243,14 +277,17 @@ def view_code_review(name):
     continue_review = True
     comments = 0
     try:
-        username = check_output(["git", "config", "--get", "user.name"]).strip()
-        useremail = check_output(["git", "config", "--get", "user.email"]).strip()
+        username = check_output(["git", "config", "--get",
+                                "user.name"]).strip()
+        useremail = check_output(["git", "config", "--get",
+                                 "user.email"]).strip()
         author = "%s<%s>" % (username, useremail)
     except CalledProcessError:
         print("Git user not configured. Commenting disabled.")
     for line in reviewtree.split('\n'):
         hunktreehash, hunkid = line.split(' ')[-1].split("\t")
-        proc = Popen(["git", "ls-tree", hunktreehash], stderr=DEVNULL, stdout=PIPE)
+        proc = Popen(["git", "ls-tree", hunktreehash],
+                     stderr=DEVNULL, stdout=PIPE)
         hunktree = proc.communicate()[0].strip()
         original_hunktree = hunktree
         for line in hunktree.split('\n'):
@@ -269,31 +306,45 @@ def view_code_review(name):
                     continue_review = False
                     break
                 elif response == "c" and author:
-                    message = prompt_for_message("Enter your comment", "CODE-COMMENT")
-                    message = "subject %s\nauthor %s\n\n%s" % (blobhash, author, message)
-                    proc = Popen(['git','hash-object','-t','blob', '-w', '--stdin'], stderr=DEVNULL, stdout=PIPE, stdin=PIPE)
-                    message_hash = proc.communicate(input=message)[0].strip()
-                    hunktree = hunktree + "\n100644 blob %s\thunk-comment" % (message_hash)
-                    comments += 1
-                    break
+                    message = "subject %s\n" % (blobhash)
+                    message += "author %s\n\n" % (author)
+                    body = prompt_for_message("Enter your comment",
+                                              "CODE-COMMENT")
+                    if len(body) > 0:
+                        message += body
+                        proc = Popen(['git', 'hash-object', '-t', 'blob',
+                                     '-w', '--stdin'], stderr=DEVNULL,
+                                     stdout=PIPE, stdin=PIPE)
+                        hash_ = proc.communicate(input=message)[0].strip()
+                        hunktree += "\n100644 blob %s\thunk-comment" % (hash_)
+                        comments += 1
+                        break
             if not continue_review:
                 break
         if hunktree != original_hunktree:
-            proc = Popen(["git", "mktree"], stderr=DEVNULL, stdout=PIPE, stdin=PIPE)
+            proc = Popen(["git", "mktree"], stderr=DEVNULL, stdout=PIPE,
+                         stdin=PIPE)
             newhunktreehash = proc.communicate(input=hunktree+"\n")[0].strip()
-            reviewtree = reviewtree.replace("040000 tree %s\t%s" % (hunktreehash, hunkid), "040000 tree %s\t%s" % (newhunktreehash, hunkid))
+            before = "040000 tree %s\t%s" % (hunktreehash, hunkid)
+            after = "040000 tree %s\t%s" % (newhunktreehash, hunkid)
+            reviewtree = reviewtree.replace(before, after)
         if not continue_review:
             break
-            
+
     if reviewtree != original_reviewtree:
-        proc = Popen(["git", "mktree"], stderr=DEVNULL, stdout=PIPE, stdin=PIPE)
+        proc = Popen(["git", "mktree"], stderr=DEVNULL, stdout=PIPE,
+                     stdin=PIPE)
         newreviewtreehash = proc.communicate(input=reviewtree+"\n")[0].strip()
-        proc = Popen(["git", "commit-tree", "-p", reviewhash, newreviewtreehash], stderr=DEVNULL, stdin=PIPE, stdout=PIPE)
+        proc = Popen(["git", "commit-tree", "-p", reviewhash,
+                     newreviewtreehash], stderr=DEVNULL, stdin=PIPE,
+                     stdout=PIPE)
         commithash = proc.communicate(input="Adding comments.")[0].strip()
-        proc = Popen(['git', 'update-ref', open_ref, commithash], stderr=DEVNULL, stdout=DEVNULL) 
+        proc = Popen(['git', 'update-ref', open_ref, commithash],
+                     stderr=DEVNULL, stdout=DEVNULL)
         proc.communicate()
     print("Finished code review.")
     print("Comments added: %d" % (comments))
+
 
 def main(args=sys.argv[1:]):
     """ Command line interface entrypoint
@@ -302,18 +353,22 @@ def main(args=sys.argv[1:]):
         args (:obj:`list`): List of arguments
     """
     parser = ArgumentParser(description='A simple git code review tool')
+
     subparsers = parser.add_subparsers(dest="subcommands")
 
     list_parser = subparsers.add_parser("list", help="List code reviews")
-    list_parser.add_argument("--closed", action="store_true", help="List closed reviews")
+    list_parser.add_argument("--closed", action="store_true",
+                             help="List closed reviews")
 
     close_parser = subparsers.add_parser("close", help="Close a code review")
     close_parser.add_argument("name", help="Code review to close.")
 
     open_parser = subparsers.add_parser("open", help="Open a code review")
     open_parser.add_argument("name", help="Code review to open.")
-    open_parser.add_argument("first", help="First commit in series to code review.")
-    open_parser.add_argument("last", help="Last commit in series to code review.")
+    open_parser.add_argument("first", help="First commit in series to"
+                                           "code review.")
+    open_parser.add_argument("last", help="Last commit in series to"
+                                          "code review.")
 
     view_parser = subparsers.add_parser("view", help="View a code review")
     view_parser.add_argument("name", help="Code review to view.")
@@ -327,6 +382,9 @@ def main(args=sys.argv[1:]):
         open_code_review(args.name, args.first, args.last)
     elif args.subcommands == "view":
         view_code_review(args.name)
+    else:
+        parser.print_usage()
+
 
 if __name__ == '__main__':
     main()
