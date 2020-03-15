@@ -27,4 +27,7 @@ setup(
             'git-code-review=git_code_review:main'
         ]
     },
+  extras_require={
+    'dev': ['pyflake8']
+    }
 )
