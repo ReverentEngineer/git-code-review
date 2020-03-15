@@ -71,6 +71,7 @@ DIFF_FILE_HEADER = re.compile(r"^diff --git a\/.* b\/(.*)$")
 HUNK_HEADER = re.compile(r"\@\@ -[\d]+,([\d]+) \+[\d]+,([\d]+) \@\@")
 REVIEW_TREE_REGEX = re.compile(r"040000 tree ([0-9a-f]{40})\t(.*)$")
 
+
 def list_code_reviews(closed=False):
     """ Lists all th open code reviews
 
@@ -110,8 +111,8 @@ def close_code_review(name):
     open_ref = open_ref.encode("utf-8")
     closed_ref = closed_ref.encode("utf-8")
     proc.communicate(input=b"create %s %s\ndelete %s\n" % (closed_ref,
-                                                          refhash,
-                                                          open_ref))
+                                                           refhash,
+                                                           open_ref))
     if proc.returncode == 0:
         print("Code review '%s' closed." % (name))
     else:
