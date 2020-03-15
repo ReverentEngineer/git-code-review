@@ -71,7 +71,6 @@ DIFF_FILE_HEADER = re.compile(r"^diff --git a\/.* b\/(.*)$")
 HUNK_HEADER = re.compile(r"\@\@ -[\d]+,([\d]+) \+[\d]+,([\d]+) \@\@")
 REVIEW_TREE_REGEX = re.compile(r"040000 tree ([0-9a-f]{40})\t(.*)$")
 
-
 def list_code_reviews(closed=False):
     """ Lists all th open code reviews
 
@@ -79,7 +78,7 @@ def list_code_reviews(closed=False):
         closed (bool): Whether to look for closed code reviews.
                        Defaults to false.
     """
-    refs = check_output(["git", "show-ref"])
+    refs = check_output(["git", "show-ref"]).decode("utf-8")
     regex = OPEN_REVIEW_REGEX if not closed else CLOSED_REVIEW_REGEX
     reviews = regex.findall(refs)
     for name in reviews:
@@ -95,6 +94,7 @@ def close_code_review(name):
     refhash = None
     closed_ref = "/".join([CLOSED_REVIEWS, name])
     open_ref = "/".join([OPEN_REVIEWS, name])
+
     proc = Popen(["git", "show-ref", "-s", open_ref],
                  stderr=DEVNULL,
                  stdout=PIPE)
@@ -107,7 +107,9 @@ def close_code_review(name):
                  stderr=DEVNULL,
                  stdin=PIPE,
                  stdout=PIPE)
-    proc.communicate(input="create %s %s\ndelete %s\n" % (closed_ref,
+    open_ref = open_ref.encode("utf-8")
+    closed_ref = closed_ref.encode("utf-8")
+    proc.communicate(input=b"create %s %s\ndelete %s\n" % (closed_ref,
                                                           refhash,
                                                           open_ref))
     if proc.returncode == 0:
@@ -201,9 +203,10 @@ def open_code_review(name, first, last):
                              stderr=DEVNULL, stdout=PIPE)
     blob_proc = None
     part = 1
+    diff = diff.decode("utf-8") if type(diff) == bytes else diff
     for line in diff.split("\n"):
         if in_hunk:
-            blob_proc.stdin.write(line + "\n")
+            blob_proc.stdin.write(line.encode("utf-8") + b"\n")
             if line.startswith("+"):
                 current_after_lines += 1
             elif line.startswith("-"):
@@ -214,19 +217,19 @@ def open_code_review(name, first, last):
             if (current_before_lines == before_lines and
                     current_after_lines == after_lines):
                 in_hunk = False
-                blobhash = blob_proc.communicate()[0].strip()
+                blobhash = blob_proc.communicate()[0][:-1]
                 proc = Popen(["git", "mktree"], stdin=PIPE,
                              stderr=DEVNULL, stdout=PIPE)
-                treehash = proc.communicate(input="100644 blob %s\thunk\n"
-                                            % (blobhash))[0].strip()
-                review_tree_proc.stdin.write("040000 tree %s\t%04d\n"
+                treehash = proc.communicate(input=b"100644 blob %s\thunk\n"
+                                            % (blobhash))[0][:-1]
+                review_tree_proc.stdin.write(b"040000 tree %s\t%04d\n"
                                              % (treehash, part))
                 part += 1
             continue
 
         match = DIFF_FILE_HEADER.match(line)
         if match:
-            filename = match.group(1)
+            filename = match.group(1).encode("utf-8")
             continue
 
         match = HUNK_HEADER.match(line)
@@ -239,11 +242,11 @@ def open_code_review(name, first, last):
             in_hunk = True
             current_before_lines = 0
             current_after_lines = 0
-            blob_proc.stdin.write("Filename: %s\n\n" % (filename))
+            blob_proc.stdin.write(b"Filename: %s\n\n" % (filename))
     reviewtreehash = review_tree_proc.communicate()[0].strip()
     proc = Popen(['git', 'commit-tree', reviewtreehash],
                  stderr=DEVNULL, stdout=PIPE, stdin=PIPE)
-    proc.stdin.write(description)
+    proc.stdin.write(description.encode("utf-8"))
     commithash = proc.communicate()[0].strip()
     proc = Popen(['git', 'update-ref', open_ref, commithash],
                  stderr=DEVNULL, stdout=DEVNULL)
@@ -263,15 +266,18 @@ def view_code_review(name):
     open_ref = "%s/%s" % (OPEN_REVIEWS, name)
     proc = Popen(["git", "show-ref", "-s", open_ref], stderr=DEVNULL,
                  stdout=PIPE)
-    reviewhash = proc.communicate()[0].strip()
+    reviewhash = proc.communicate()[0][:-1]
     if proc.returncode != 0:
         print("No open code review named '%s'" % (name))
+        return
 
-    print(reviewhash)
     os.system("git log %s | more" % (reviewhash))
 
     proc = Popen(["git", "ls-tree", reviewhash], stderr=DEVNULL, stdout=PIPE)
     reviewtree = proc.communicate()[0].strip()
+    if proc.returncode != 0:
+        print('Internal error.')
+        return
     original_reviewtree = reviewtree
     author = None
     continue_review = True
