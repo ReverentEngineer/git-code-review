@@ -2,13 +2,13 @@
 """ Script for performing code reviews built into git history
 
 Usage:
+      
+    ::
 
-    git code-review list [ --closed ]
-    git code-review open <name> <commit> <commit>
-    git code-review close <name>
-    git code-review view <name>
-
-Examples:
+        git code-review list [ --closed ]
+        git code-review open <name> <commit> <commit>
+        git code-review close <name>
+        git code-review view <name>
 
     List open code reviews::
 
@@ -26,7 +26,7 @@ Examples:
 
         git code-review close my-code-review
 
-    View/comment on code-review:
+    View/comment on code-review::
 
         git code-review view my-code-review
 
