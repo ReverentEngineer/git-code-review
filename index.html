@@ -37,10 +37,12 @@
 <span class="target" id="module-git_code_review"></span><p>Script for performing code reviews built into git history</p>
 <p>Usage:</p>
 <blockquote>
-<div><p>git code-review list [ –closed ]
-git code-review open &lt;name&gt; &lt;commit&gt; &lt;commit&gt;
-git code-review close &lt;name&gt;
-git code-review view &lt;name&gt;</p>
+<div><div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">git</span> <span class="n">code</span><span class="o">-</span><span class="n">review</span> <span class="nb">list</span> <span class="p">[</span> <span class="o">--</span><span class="n">closed</span> <span class="p">]</span>
+<span class="n">git</span> <span class="n">code</span><span class="o">-</span><span class="n">review</span> <span class="nb">open</span> <span class="o">&lt;</span><span class="n">name</span><span class="o">&gt;</span> <span class="o">&lt;</span><span class="n">commit</span><span class="o">&gt;</span> <span class="o">&lt;</span><span class="n">commit</span><span class="o">&gt;</span>
+<span class="n">git</span> <span class="n">code</span><span class="o">-</span><span class="n">review</span> <span class="n">close</span> <span class="o">&lt;</span><span class="n">name</span><span class="o">&gt;</span>
+<span class="n">git</span> <span class="n">code</span><span class="o">-</span><span class="n">review</span> <span class="n">view</span> <span class="o">&lt;</span><span class="n">name</span><span class="o">&gt;</span>
+</pre></div>
+</div>
 </div></blockquote>
 <p class="rubric">Examples</p>
 <p>List open code reviews:</p>
@@ -63,12 +65,6 @@ git code-review view &lt;name&gt;</p>
 <blockquote>
 <div><p>git code-review view my-code-review</p>
 </div></blockquote>
-<dl class="class">
-<dt id="git_code_review.GitIPC">
-<em class="property">class </em><code class="sig-prename descclassname">git_code_review.</code><code class="sig-name descname">GitIPC</code><span class="sig-paren">(</span><em class="sig-param">args</em>, <em class="sig-param">pipe_in=True</em><span class="sig-paren">)</span><a class="headerlink" href="#git_code_review.GitIPC" title="Permalink to this definition">¶</a></dt>
-<dd><p>Git inteprocess-communication</p>
-</dd></dl>
-
 <dl class="function">
 <dt id="git_code_review.can_run">
 <code class="sig-prename descclassname">git_code_review.</code><code class="sig-name descname">can_run</code><span class="sig-paren">(</span><em class="sig-param">exe</em><span class="sig-paren">)</span><a class="headerlink" href="#git_code_review.can_run" title="Permalink to this definition">¶</a></dt>
