@@ -4,7 +4,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta charset="utf-8" />
-    <title>Welcome to git-code-review’s documentation! &#8212; git-code-review 0.1.0 documentation</title>
+    <title>git-code-review &#8212; git-code-review 0.1.0 documentation</title>
     <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
@@ -25,16 +25,13 @@
 
     <div class="document">
       <div class="documentwrapper">
-        <div class="bodywrapper">
           
 
           <div class="body" role="main">
             
-  <div class="section" id="welcome-to-git-code-review-s-documentation">
-<h1>Welcome to git-code-review’s documentation!<a class="headerlink" href="#welcome-to-git-code-review-s-documentation" title="Permalink to this headline">¶</a></h1>
-<div class="toctree-wrapper compound">
-</div>
-<span class="target" id="module-git_code_review"></span><p>Script for performing code reviews built into git history</p>
+  <div class="section" id="module-git_code_review">
+<span id="git-code-review"></span><h1>git-code-review<a class="headerlink" href="#module-git_code_review" title="Permalink to this headline">¶</a></h1>
+<p>Script for performing code reviews built into git history</p>
 <p>Usage:</p>
 <blockquote>
 <div><div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">git</span> <span class="n">code</span><span class="o">-</span><span class="n">review</span> <span class="nb">list</span> <span class="p">[</span> <span class="o">--</span><span class="n">closed</span> <span class="p">]</span>
@@ -43,8 +40,6 @@
 <span class="n">git</span> <span class="n">code</span><span class="o">-</span><span class="n">review</span> <span class="n">view</span> <span class="o">&lt;</span><span class="n">name</span><span class="o">&gt;</span>
 </pre></div>
 </div>
-</div></blockquote>
-<p class="rubric">Examples</p>
 <p>List open code reviews:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">git</span> <span class="n">code</span><span class="o">-</span><span class="n">review</span> <span class="nb">list</span>
 </pre></div>
@@ -62,122 +57,15 @@
 </pre></div>
 </div>
 <p>View/comment on code-review:</p>
-<blockquote>
-<div><p>git code-review view my-code-review</p>
-</div></blockquote>
-<dl class="function">
-<dt id="git_code_review.can_run">
-<code class="sig-prename descclassname">git_code_review.</code><code class="sig-name descname">can_run</code><span class="sig-paren">(</span><em class="sig-param">exe</em><span class="sig-paren">)</span><a class="headerlink" href="#git_code_review.can_run" title="Permalink to this definition">¶</a></dt>
-<dd><p>Checks if executable exists on path</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>exe</strong> (<em>str</em>) – Name of executable</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="function">
-<dt id="git_code_review.close_code_review">
-<code class="sig-prename descclassname">git_code_review.</code><code class="sig-name descname">close_code_review</code><span class="sig-paren">(</span><em class="sig-param">name</em><span class="sig-paren">)</span><a class="headerlink" href="#git_code_review.close_code_review" title="Permalink to this definition">¶</a></dt>
-<dd><p>Closes a code review</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>name</strong> (<em>str</em>) – Name of code review to close</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="function">
-<dt id="git_code_review.list_code_reviews">
-<code class="sig-prename descclassname">git_code_review.</code><code class="sig-name descname">list_code_reviews</code><span class="sig-paren">(</span><em class="sig-param">closed=False</em><span class="sig-paren">)</span><a class="headerlink" href="#git_code_review.list_code_reviews" title="Permalink to this definition">¶</a></dt>
-<dd><p>Lists all th open code reviews</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>closed</strong> (<em>bool</em>) – Whether to look for closed code reviews.
-Defaults to false.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="function">
-<dt id="git_code_review.main">
-<code class="sig-prename descclassname">git_code_review.</code><code class="sig-name descname">main</code><span class="sig-paren">(</span><em class="sig-param">args=['-M', 'html', 'source', 'build']</em><span class="sig-paren">)</span><a class="headerlink" href="#git_code_review.main" title="Permalink to this definition">¶</a></dt>
-<dd><p>Command line interface entrypoint</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>args</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">list</span></code>) – List of arguments</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="function">
-<dt id="git_code_review.open_code_review">
-<code class="sig-prename descclassname">git_code_review.</code><code class="sig-name descname">open_code_review</code><span class="sig-paren">(</span><em class="sig-param">name</em>, <em class="sig-param">first</em>, <em class="sig-param">last</em><span class="sig-paren">)</span><a class="headerlink" href="#git_code_review.open_code_review" title="Permalink to this definition">¶</a></dt>
-<dd><p>Opens a code review</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>name</strong> (<em>str</em>) – Name of the code review</p></li>
-<li><p><strong>start</strong> (<em>str</em>) – First commit in series to code review</p></li>
-<li><p><strong>last</strong> (<em>Str</em>) – Last commit in series to code review</p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="function">
-<dt id="git_code_review.prompt_for_message">
-<code class="sig-prename descclassname">git_code_review.</code><code class="sig-name descname">prompt_for_message</code><span class="sig-paren">(</span><em class="sig-param">prompt=None</em>, <em class="sig-param">temp_filename='INPUT-MESSAGE'</em><span class="sig-paren">)</span><a class="headerlink" href="#git_code_review.prompt_for_message" title="Permalink to this definition">¶</a></dt>
-<dd><p>Prompts for message</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>prompt</strong> (<em>str</em>) – Prompt to apply to message</p></li>
-<li><p><strong>temp_filename</strong> (<em>str</em>) – Name of temporary file name to use</p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="function">
-<dt id="git_code_review.view_code_review">
-<code class="sig-prename descclassname">git_code_review.</code><code class="sig-name descname">view_code_review</code><span class="sig-paren">(</span><em class="sig-param">name</em><span class="sig-paren">)</span><a class="headerlink" href="#git_code_review.view_code_review" title="Permalink to this definition">¶</a></dt>
-<dd><p>Views a code review</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>name</strong> (<em>str</em>) – Code review to view</p>
-</dd>
-</dl>
-</dd></dl>
-
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">git</span> <span class="n">code</span><span class="o">-</span><span class="n">review</span> <span class="n">view</span> <span class="n">my</span><span class="o">-</span><span class="n">code</span><span class="o">-</span><span class="n">review</span>
+</pre></div>
 </div>
-<div class="section" id="indices-and-tables">
-<h1>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Permalink to this headline">¶</a></h1>
-<ul class="simple">
-<li><p><a class="reference internal" href="genindex.html"><span class="std std-ref">Index</span></a></p></li>
-<li><p><a class="reference internal" href="py-modindex.html"><span class="std std-ref">Module Index</span></a></p></li>
-<li><p><a class="reference internal" href="search.html"><span class="std std-ref">Search Page</span></a></p></li>
-</ul>
+</div></blockquote>
 </div>
 
 
           </div>
           
-        </div>
-      </div>
-      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
-        <div class="sphinxsidebarwrapper">
-<div id="searchbox" style="display: none" role="search">
-  <h3 id="searchlabel">Quick search</h3>
-    <div class="searchformwrapper">
-    <form class="search" action="search.html" method="get">
-      <input type="text" name="q" aria-labelledby="searchlabel" />
-      <input type="submit" value="Go" />
-    </form>
-    </div>
-</div>
-<script>$('#searchbox').show(0);</script>
-        </div>
       </div>
       <div class="clearer"></div>
     </div>
