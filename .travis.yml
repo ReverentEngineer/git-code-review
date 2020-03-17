@@ -1,0 +1,4 @@
+language: python
+install:
+  - pip install sphinx sphinxcontrib-napoleon
+script: make -C docs html
