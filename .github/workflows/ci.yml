@@ -13,4 +13,5 @@ jobs:
            python -m pip install --upgrade pip
            pip install sphinx sphinxcontrib-napoleon
       - name: 
-        run: make -C docs html
+        run: make publish-docs
+
