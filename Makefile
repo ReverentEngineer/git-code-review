@@ -14,7 +14,7 @@ docs:
 
 publish-docs:
 	rm -rf docs/build/html
-	git clone --branch=gh-pages $(URL) docs/build/html 
+	@git clone --branch=gh-pages $(URL) docs/build/html 
 	cd docs/build/html && git rm -rf ./*
 	make -C docs html
 	cd docs/build/html && git add ./* && git commit -m "Updates" && git push
