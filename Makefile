@@ -1,7 +1,8 @@
+URL := git@github.com:ReverentEngineer/git-code-review.git
 ifdef GITHUB_TOKEN
-	URL := https://$(GITHUB_TOKEN)@github.com/ReverentEngineer/git-code-review
-else
-	URL := git@github.com:ReverentEngineer/git-code-review.git
+ifdef GITHUB_ACTOR
+	URL := https://$(GITHUB_ACTOR):$(GITHUB_TOKEN)@github.com/ReverentEngineer/git-code-review
+endif
 endif
 
 clean:
