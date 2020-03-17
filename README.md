@@ -1,5 +1,7 @@
 # git-code-review
 
+[![Build Status](https://travis-ci.org/ReverentEngineer/git-code-review.svg?branch=master)](https://travis-ci.org/ReverentEngineer/git-code-review)
+
 A code review tool built into the git objects.
 
 # Usage
