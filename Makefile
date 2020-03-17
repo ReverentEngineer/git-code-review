@@ -13,7 +13,7 @@ docs:
 .PHONY: docs
 
 publish-docs:
-	[ -d docs/build/html ] && rm -rf docs/build/html
+	rm -rf docs/build/html
 	git clone --branch=gh-pages $(URL) docs/build/html 
 	cd docs/build/html && git rm -rf ./*
 	make -C docs html
