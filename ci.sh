@@ -15,6 +15,7 @@ URL=https://${GITHUB_ACTOR}:${GITHUB_TOKEN}@github.com/ReverentEngineer/git-code
 git config --global user.name "Github Action"
 git config --global user.mail "jeff@reverentengineer.com"
 git clone --branch=gh-pages $URL docs/build/html
-cd docs/build/html && git rm -rf ./*
+pushd docs/build/html && git rm -rf ./*
+popd
 make -C docs html
 cd docs/build/html && git add ./* && git commit -m "Updates" && git push
