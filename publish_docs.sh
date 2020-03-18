@@ -12,10 +12,18 @@ fi
 
 URL=https://${GITHUB_ACTOR}:${GITHUB_TOKEN}@github.com/ReverentEngineer/git-code-review 
 
-git config --global user.name "Github Action"
-git config --global user.mail "jeff@reverentengineer.com"
 git clone --branch=gh-pages $URL docs/build/html
 pushd docs/build/html && git rm -rf ./*
 popd
 make -C docs html
-cd docs/build/html && git add ./* && git commit -m "Updates" && git --force push
+cd docs/build/html
+
+if [[ $(git diff-index --quiet HEAD --) -eq 1 ]]; then
+  git config --local user.name "Github Action"
+  git config --local user.mail "jeff@reverentengineer.com"
+  git add ./*
+  git commit -m "Updates"
+  git --force push
+else
+  echo "No changes."
+fi
