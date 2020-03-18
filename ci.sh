@@ -10,7 +10,7 @@ if [[ -z ${GITHUB_TOKEN} ]]; then
   exit 1;
 fi
 
-URL=https://$(GITHUB_ACTOR):$(GITHUB_TOKEN)@github.com/ReverentEngineer/git-code-review 
+URL=https://${GITHUB_ACTOR}:${GITHUB_TOKEN}@github.com/ReverentEngineer/git-code-review 
 
 git config --global user.name "Github Action"
 git config --global user.mail "jeff@reverentengineer.com"
