@@ -18,4 +18,4 @@ git clone --branch=gh-pages $URL docs/build/html
 pushd docs/build/html && git rm -rf ./*
 popd
 make -C docs html
-cd docs/build/html && git add ./* && git commit -m "Updates" && git push
+cd docs/build/html && git add ./* && git commit -m "Updates" && git --force push
